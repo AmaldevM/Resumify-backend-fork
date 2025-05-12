@@ -165,9 +165,9 @@ private List<String> extractSkills(String text) {
 
 
 
-    public List<Resume> getAllResumes() {
-        return resumeRepository.findAll();
-    }
+    // public List<Resume> getAllResumes() {
+    //     return resumeRepository.findAll();
+    // }
 
 
     

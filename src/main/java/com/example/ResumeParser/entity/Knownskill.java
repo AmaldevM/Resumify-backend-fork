@@ -20,11 +20,14 @@ public class Knownskill {
     @Column(unique = true)
     private String name;
 
-    public void KnownSkill() {}
+    // Correct constructor
+    public Knownskill() {}
 
-    public void KnownSkill(String name) {
+    public Knownskill(String name) {
         this.name = name.toLowerCase();
     }
+
+
 
     // Getter for id
     public Long getId() {
@@ -45,5 +48,12 @@ public class Knownskill {
     public void setName(String name) {
         this.name = name.toLowerCase();
     }
+
+
+
+
     
+
+
+
 }
