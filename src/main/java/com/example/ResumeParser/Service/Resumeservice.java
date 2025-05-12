@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.ResumeParser.dto.ResumeWithSkillsDTO;
 import com.example.ResumeParser.entity.Knownskill;
 import com.example.ResumeParser.entity.Resume;
 import com.example.ResumeParser.entity.Skill;
@@ -17,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,32 @@ import org.springframework.web.multipart.MultipartFile;
 
     @Autowired
     private Knownskillrepository knownskillrepo;
+
+    // added portion for filtering
+
+    @Autowired
+    private Resumerepository resumerepository;
+
+    public List<ResumeWithSkillsDTO> filterResumes(List<String> skills, int minExp) {
+        int skillCount = skills.size();
+        List<Object[]> results = resumerepository.filterBySkillsAndExperience(skills, minExp, skillCount);
+
+        List<ResumeWithSkillsDTO> finalList = new ArrayList<>();
+        for (Object[] row : results) {
+            ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
+                ((Number) row[0]).longValue(),
+                (String) row[1],
+                (String) row[2],
+                (String) row[3],
+                ((Number) row[4]).intValue(),
+                (String) row[5]
+            );
+            finalList.add(dto);
+        }
+
+        return finalList;
+    }
+    // till here
 
 
     public void parseResume(MultipartFile file) {
@@ -165,9 +193,9 @@ private List<String> extractSkills(String text) {
 
 
 
-    // public List<Resume> getAllResumes() {
-    //     return resumeRepository.findAll();
-    // }
+    public List<Resume> getAllResumes() {
+        return resumeRepository.findAll();
+    }
 
 
     

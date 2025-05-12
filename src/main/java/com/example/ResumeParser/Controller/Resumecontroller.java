@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.ResumeParser.Service.Resumeservice;
 import com.example.ResumeParser.entity.Resume;
 
+import com.example.ResumeParser.dto.ResumeWithSkillsDTO;
+import com.example.ResumeParser.dto.SkillFilterRequest;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -42,12 +45,14 @@ public class Resumecontroller {
     }
 
 
-    // @GetMapping("/resumes")
-    // public ResponseEntity<List<Resume>> getAllResumes() {
-    //     List<Resume> resumes = resumeservice.getAllResumes();
-    //     return ResponseEntity.ok(resumes);
-    // }
-
-
-    
+    @GetMapping("/resumes")
+    public ResponseEntity<List<Resume>> getAllResumes() {
+        List<Resume> resumes = resumeservice.getAllResumes();
+        return ResponseEntity.ok(resumes);
+    }
+    // controller for filtering
+    @PostMapping("/filter")
+    public List<ResumeWithSkillsDTO> filterResumes(@RequestBody SkillFilterRequest request) {
+        return resumeservice.filterResumes(request.getSkills(), request.getMinExp());
+    }
 }
