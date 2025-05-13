@@ -24,13 +24,13 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id) {
-        return userRepository.findById(id).orElse(null);
-    }
+    // @GetMapping("/{id}")
+    // public User getUserById(@PathVariable int id) {
+    //     return userRepository.findById(id).orElse(null);
+    // }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable int id) {
-        userRepository.deleteById(id);
-    }
+    // @DeleteMapping("/{id}")
+    // public void deleteUser(@PathVariable int id) {
+    //     userRepository.deleteById(id);
+    // }
 }
