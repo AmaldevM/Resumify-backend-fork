@@ -7,6 +7,7 @@ import java.util.Optional;  // Add this import
 
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-Optional<User> findById(Long id);  
+public interface UserRepository extends JpaRepository<User, Long> {
+    // Removed findById as it is already inherited from JpaRepository
+    Optional<User> findByEmail(String email); // Needed for login
 }

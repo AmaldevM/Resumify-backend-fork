@@ -14,7 +14,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public User createUser(@RequestBody User user) {
         return userRepository.save(user);
     }
@@ -26,11 +26,11 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById((long) id).orElse(null);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
-        userRepository.deleteById(id);
+        userRepository.deleteById((long) id);
     }
 }
