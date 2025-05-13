@@ -14,7 +14,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json", produces = "application/json")
     public User createUser(@RequestBody User user) {
         return userRepository.save(user);
     }

@@ -1,11 +1,25 @@
 package com.example.ResumeParser.dto;
 
-import lombok.Data;
-
 import java.util.List;
 
-@Data
 public class SkillFilterRequest {
+
     private List<String> skills;
-    private int minExp;
+    private double minExp;
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public double getMinExp() {
+        return minExp;
+    }
+
+    public void setMinExp(double minExp) {
+        this.minExp = minExp;
+    }
 }

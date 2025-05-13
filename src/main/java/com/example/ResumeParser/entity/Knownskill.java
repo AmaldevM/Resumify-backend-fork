@@ -6,13 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "known_skills")
-@Getter
-@Setter
 public class Knownskill {
 
     @Id
@@ -28,6 +24,21 @@ public class Knownskill {
         this.name = name.toLowerCase();
     }
 
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    // Override to maintain lowercase naming
     public void setName(String name) {
         this.name = name.toLowerCase();
     }

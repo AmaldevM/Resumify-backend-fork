@@ -12,13 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "skills")
-@Getter
-@Setter
 public class Skill {
 
     @Id
@@ -38,8 +34,30 @@ public class Skill {
         this.name = name.toLowerCase();
     }
 
-    // Override setter to maintain lowercase conversion
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    // Override to always store lowercase names
     public void setName(String name) {
         this.name = name.toLowerCase();
+    }
+
+    public Set<Resume> getResumes() {
+        return resumes;
+    }
+
+    public void setResumes(Set<Resume> resumes) {
+        this.resumes = resumes;
     }
 }
