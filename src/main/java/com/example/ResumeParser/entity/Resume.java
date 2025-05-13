@@ -1,12 +1,27 @@
 package com.example.ResumeParser.entity;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.*;
-import java.util.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "resumes")
-public class Resume{
+@Getter
+@Setter
+public class Resume {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +43,6 @@ public class Resume{
 
     public Resume() {}
 
-    // Getters and setters
-
     public void addSkill(Skill skill) {
         this.skills.add(skill);
         skill.getResumes().add(this);
@@ -39,50 +52,4 @@ public class Resume{
         this.skills.remove(skill);
         skill.getResumes().remove(this);
     }
-
-
-    public String getName() {
-        return name;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-    
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-    
-    public double getYearsOfExperience() {
-        return yearsOfExperience;
-    }
-    
-    public void setYearsOfExperience(double yearsOfExperience) {
-        this.yearsOfExperience = yearsOfExperience;
-    }
-
-
-    public Set<Skill> getSkills() {
-        return skills;
-    }
-    
-    public void setSkills(Set<Skill> skills) {
-        this.skills = skills;
-    }
-    
-    
-
-    
 }
