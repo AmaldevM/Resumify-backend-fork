@@ -1,17 +1,19 @@
 package com.example.ResumeParser.Service;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.ResumeParser.dto.ResumeWithSkillsDTO;
 import com.example.ResumeParser.entity.Knownskill;
 import com.example.ResumeParser.entity.Resume;
 import com.example.ResumeParser.entity.Skill;
+import com.example.ResumeParser.entity.User;
 import com.example.ResumeParser.repository.Knownskillrepository;
 import com.example.ResumeParser.repository.Resumerepository;
 import com.example.ResumeParser.repository.Skillrepository;
+import com.example.ResumeParser.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -22,36 +24,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.springframework.web.multipart.MultipartFile;
-
-
-    @Service
-
-    public class Resumeservice {
+@Service
+public class Resumeservice {
 
     @Autowired
     private Resumerepository resumeRepository;
 
     @Autowired
     private Skillrepository skillRepository;
-    
 
     @Autowired
     private Knownskillrepository knownskillrepo;
 
-    // added portion for filtering
-
     @Autowired
-    private Resumerepository resumerepository;
+    private UserRepository userRepository;
 
     public List<ResumeWithSkillsDTO> filterResumes(List<String> skills, int minExp) {
         int skillCount = skills.size();
-        List<Object[]> results = resumerepository.filterBySkillsAndExperience(skills, minExp, skillCount);
+        List<Object[]> results = resumeRepository.filterBySkillsAndExperience(skills, minExp, skillCount);
 
         List<ResumeWithSkillsDTO> finalList = new ArrayList<>();
         for (Object[] row : results) {
@@ -68,8 +58,6 @@ import org.springframework.web.multipart.MultipartFile;
 
         return finalList;
     }
-    // till here
-
 
     public void parseResume(MultipartFile file) {
         try {
@@ -86,11 +74,6 @@ import org.springframework.web.multipart.MultipartFile;
             System.out.println("Phone: " + phone);
             System.out.println("Experience: " + experience);
             System.out.println("Skills: " + skills);
-
-
-
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,27 +111,16 @@ import org.springframework.web.multipart.MultipartFile;
         return matcher.find() ? matcher.group(1) + " years" : "Not Found";
     }
 
-    // private List<String> extractSkills(String text) {
-    //     List<String> knownSkills = List.of("Java", "Spring", "Python", "SQL", "JavaScript", "AWS", "Docker", "Angular", "React");
-    //     return knownSkills.stream()
-    //             .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
-    //             .collect(Collectors.toList());
-    // }
-
-
-
-private List<String> extractSkills(String text) {
-    List<String> knownSkills = knownskillrepo.findAll()
+    private List<String> extractSkills(String text) {
+        List<String> knownSkills = knownskillrepo.findAll()
                                 .stream()
                                 .map(Knownskill::getName)
                                 .collect(Collectors.toList());
 
-    return knownSkills.stream()
-            .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
-            .collect(Collectors.toList());
-}
-
-
+        return knownSkills.stream()
+                .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public void saveresume(MultipartFile file) {
@@ -172,7 +144,7 @@ private List<String> extractSkills(String text) {
             for (String skillName : skillsList) {
                 Skill skill = skillRepository.findByName(skillName)
                         .orElseGet(() -> new Skill(skillName));
-                resume.addSkill(skill); // Bi-directional link
+                resume.addSkill(skill);
             }
 
             resumeRepository.save(resume);
@@ -191,12 +163,69 @@ private List<String> extractSkills(String text) {
         }
     }
 
-
-
     public List<Resume> getAllResumes() {
         return resumeRepository.findAll();
     }
 
+    // New method to get resumes by userId
+    public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        List<Resume> resumes = resumeRepository.findByUser(user);
 
-    
+        List<ResumeWithSkillsDTO> resumeDTOs = new ArrayList<>();
+        for (Resume resume : resumes) {
+            // Pass yearsOfExperience as double
+            ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
+                resume.getId(),
+                resume.getName(),
+                resume.getPhoneNumber(),
+                resume.getEmail(),
+                resume.getYearsOfExperience(),  // No casting needed for double
+                resume.getSkills().toString()
+            );
+            resumeDTOs.add(dto);
+        }
+        return resumeDTOs;
+    }
+    @Transactional
+public void uploadResumeForUser(Long userId, MultipartFile file) {
+    try {
+        // Extract resume content and details
+        String content = extractTextFromFile(file);
+        String name = extractName(content);
+        String email = extractEmail(content);
+        String phone = extractPhone(content);
+        String experienceStr = extractExperience(content);
+        List<String> skillsList = extractSkills(content);
+
+        double experience = extractExperienceAsDouble(experienceStr);
+
+        // Find the user by ID
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Create a new Resume object
+        Resume resume = new Resume();
+        resume.setName(name);
+        resume.setEmail(email);
+        resume.setPhoneNumber(phone);
+        resume.setYearsOfExperience(experience);
+        resume.setUser(user);  // Associate with the user
+
+        // Save the skills
+        for (String skillName : skillsList) {
+            Skill skill = skillRepository.findByName(skillName)
+                    .orElseGet(() -> new Skill(skillName));
+            resume.addSkill(skill);
+        }
+
+        // Save the resume
+        resumeRepository.save(resume);
+        System.out.println("Resume uploaded and associated with user: " + name);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

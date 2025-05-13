@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,10 @@ public class Resume {
     private String email;
     private String phoneNumber;
     private double yearsOfExperience;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)  // Foreign key column to User
+    private User user; // Linking Resume to User
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
