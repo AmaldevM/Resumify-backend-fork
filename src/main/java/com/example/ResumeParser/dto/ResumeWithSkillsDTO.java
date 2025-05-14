@@ -1,5 +1,7 @@
 package com.example.ResumeParser.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,9 @@ public class ResumeWithSkillsDTO {
     private String phoneNumber;
     private String email;
     private double yearsOfExperience;
-    private String skills;
-     public ResumeWithSkillsDTO(Long id, String name, String phoneNumber, String email, double yearsOfExperience, String skills) {
+    private List<String> skills;  // ✅ Correct
+
+     public ResumeWithSkillsDTO(Long id, String name, String phoneNumber, String email, double yearsOfExperience, List<String> skills) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;

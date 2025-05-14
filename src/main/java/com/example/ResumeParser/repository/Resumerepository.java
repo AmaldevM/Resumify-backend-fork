@@ -4,13 +4,22 @@ import java.util.List;
 import com.example.ResumeParser.entity.Resume;
 import com.example.ResumeParser.entity.User; // Import User entity
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface Resumerepository extends JpaRepository<Resume, Long> {
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Resume r WHERE r.user.id = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
+
 
     // Optional: Find resumes that have a specific skill
     @Query("SELECT r FROM Resume r JOIN r.skills s WHERE LOWER(s.name) = LOWER(:skillName)")

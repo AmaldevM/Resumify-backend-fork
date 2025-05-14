@@ -6,6 +6,7 @@ import com.example.ResumeParser.Service.Resumeservice;
 import com.example.ResumeParser.entity.Resume;
 import com.example.ResumeParser.entity.User;
 import com.example.ResumeParser.dto.ResumeWithSkillsDTO;
+import com.example.ResumeParser.dto.Resumefilterrequest;
 import com.example.ResumeParser.dto.SkillFilterRequest;
 import com.example.ResumeParser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +57,10 @@ public class Resumecontroller {
     //     return ResponseEntity.ok(resumes);
     // }
 
-    @PostMapping("/filter")
-    public List<ResumeWithSkillsDTO> filterResumes(@RequestBody SkillFilterRequest request) {
-        return resumeservice.filterResumes(request.getSkills(), (int) request.getMinExp());
-    }
+    // @PostMapping("/filter")
+    // public List<ResumeWithSkillsDTO> filterResumes(@RequestBody SkillFilterRequest request) {
+    //     return resumeservice.filterResumes(request.getSkills(), (int) request.getMinExp());
+    // }
 
     // New endpoint to get resumes by userId
     @GetMapping("/resumesByUserId")
@@ -67,4 +68,38 @@ public class Resumecontroller {
         List<ResumeWithSkillsDTO> resumes = resumeservice.getResumesByUserId(userId);
         return ResponseEntity.ok(resumes);
     }
+
+
+@PostMapping("/filter-user-resumes")
+public ResponseEntity<List<ResumeWithSkillsDTO>> filterUserResumes(@RequestBody Resumefilterrequest request) {
+    List<ResumeWithSkillsDTO> filtered = resumeservice.filterResumesByUser(
+        request.getUserId(),
+        request.getSkills(),
+        request.getMinYearsOfExperience()
+    );
+    return ResponseEntity.ok(filtered);
+}
+
+
+@DeleteMapping("/delete/{userId}")
+public ResponseEntity<?> deleteUserResumes(@PathVariable Long userId) {
+    resumeservice.deleteResumesByUserId(userId);
+    return ResponseEntity.ok("User's resumes deleted successfully");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

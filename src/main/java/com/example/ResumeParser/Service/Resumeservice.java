@@ -39,25 +39,25 @@ public class Resumeservice {
     @Autowired
     private UserRepository userRepository;
 
-    public List<ResumeWithSkillsDTO> filterResumes(List<String> skills, int minExp) {
-        int skillCount = skills.size();
-        List<Object[]> results = resumeRepository.filterBySkillsAndExperience(skills, minExp, skillCount);
+    // public List<ResumeWithSkillsDTO> filterResumes(List<String> skills, int minExp) {
+    //     int skillCount = skills.size();
+    //     List<Object[]> results = resumeRepository.filterBySkillsAndExperience(skills, minExp, skillCount);
 
-        List<ResumeWithSkillsDTO> finalList = new ArrayList<>();
-        for (Object[] row : results) {
-            ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
-                ((Number) row[0]).longValue(),
-                (String) row[1],
-                (String) row[2],
-                (String) row[3],
-                ((Number) row[4]).intValue(),
-                (String) row[5]
-            );
-            finalList.add(dto);
-        }
+    //     List<ResumeWithSkillsDTO> finalList = new ArrayList<>();
+    //     for (Object[] row : results) {
+    //         ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
+    //             ((Number) row[0]).longValue(),
+    //             (String) row[1],
+    //             (String) row[2],
+    //             (String) row[3],
+    //             ((Number) row[4]).intValue(),
+    //             (String) row[5]
+    //         );
+    //         finalList.add(dto);
+    //     }
 
-        return finalList;
-    }
+    //     return finalList;
+    // }
 
     public void parseResume(MultipartFile file) {
         try {
@@ -168,23 +168,52 @@ public class Resumeservice {
     }
 
     // New method to get resumes by userId
-    public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        List<Resume> resumes = resumeRepository.findByUser(user);
+    // public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
+    //     User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    //     List<Resume> resumes = resumeRepository.findByUser(user);
 
+    //     List<ResumeWithSkillsDTO> resumeDTOs = new ArrayList<>();
+    //     for (Resume resume : resumes) {
+    //         // Pass yearsOfExperience as double
+    //         ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
+    //             resume.getId(),
+    //             resume.getName(),
+    //             resume.getPhoneNumber(),
+    //             resume.getEmail(),
+    //             resume.getYearsOfExperience(),  // No casting needed for double
+    //             resume.getSkills().toString()
+    //         );
+    //         resumeDTOs.add(dto);
+    //     }
+    //     return resumeDTOs;
+    // }
+
+
+    // test method
+    public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        List<Resume> resumes = resumeRepository.findByUser(user);
         List<ResumeWithSkillsDTO> resumeDTOs = new ArrayList<>();
+    
         for (Resume resume : resumes) {
-            // Pass yearsOfExperience as double
+            List<String> skillNames = resume.getSkills().stream()
+                .map(Skill::getName)  // Extract skill names
+                .collect(Collectors.toList());
+    
             ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
                 resume.getId(),
                 resume.getName(),
                 resume.getPhoneNumber(),
                 resume.getEmail(),
-                resume.getYearsOfExperience(),  // No casting needed for double
-                resume.getSkills().toString()
+                resume.getYearsOfExperience(),
+                skillNames
             );
+    
             resumeDTOs.add(dto);
         }
+    
         return resumeDTOs;
     }
     @Transactional
@@ -227,5 +256,56 @@ public void uploadResumeForUser(Long userId, MultipartFile file) {
         e.printStackTrace();
     }
 }
+
+
+
+// get filtered resumes for specific user
+public List<ResumeWithSkillsDTO> filterResumesByUser(Long userId, List<String> skillNames, double minExperience) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+
+    List<Resume> userResumes = resumeRepository.findByUser(user);
+
+    return userResumes.stream()
+        .filter(resume -> resume.getYearsOfExperience() >= minExperience)
+        .filter(resume -> {
+            List<String> resumeSkillNames = resume.getSkills().stream()
+                .map(Skill::getName)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+            return skillNames.stream()
+                .allMatch(s -> resumeSkillNames.contains(s.toLowerCase()));
+        })
+        .map(resume -> {
+            List<String> skillList = resume.getSkills().stream()
+                .map(Skill::getName)
+                .collect(Collectors.toList());
+
+            return new ResumeWithSkillsDTO(
+                resume.getId(),
+                resume.getName(),
+                resume.getPhoneNumber(),
+                resume.getEmail(),
+                resume.getYearsOfExperience(),
+                skillList
+            );
+        })
+        .collect(Collectors.toList());
+}
+
+
+// deklete users resume with id
+
+
+public void deleteResumesByUserId(Long userId) {
+    User user = userRepository.findById(userId)
+                  .orElseThrow(() -> new RuntimeException("User not found"));
+    resumeRepository.deleteAllByUserId(userId);
+
+
+
+
+}
+
 
 }
