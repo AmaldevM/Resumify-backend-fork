@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,8 @@ public class Resumeservice {
     private UserRepository userRepository;
 
     public List<ResumeWithSkillsDTO> filterResumes(List<String> skills, double minExp, Long userId) {
+       System.out.println("hi from filter resumes");
+        
         int skillCount = skills.size();
         List<Object[]> results = resumeRepository.filterBySkillsAndExperience(skills, minExp,skillCount, userId);
 
@@ -51,7 +54,7 @@ public class Resumeservice {
                 (String) row[2],
                 (String) row[3],
                 ((Number) row[4]).doubleValue(),
-                (List<String>) row[5]
+                Arrays.asList(((String) row[5]).split(",")) // split skills string into list
             );
             finalList.add(dto);
         }
