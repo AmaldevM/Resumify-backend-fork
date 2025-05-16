@@ -282,7 +282,7 @@ public class Resumeservice {
 
 
 
-// new uploadfunction from albin
+// new upload function from albin
 public Resume uploadResumeForUser(Long userId,MultipartFile file) throws Exception {
     InputStream is = file.getInputStream();
     PDDocument document = PDDocument.load(is);
