@@ -1,6 +1,5 @@
 package com.example.ResumeParser.Controller;
 
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.example.ResumeParser.Service.Resumeservice;
 import com.example.ResumeParser.entity.Resume;
@@ -68,14 +67,18 @@ public class Resumecontroller {
         List<ResumeWithSkillsDTO> resumes = resumeservice.getResumesByUserId(userId);
         return ResponseEntity.ok(resumes);
     }
-
+ @PostMapping("/filter")
+    public List<ResumeWithSkillsDTO> filterResumes(@RequestBody Resumefilterrequest request) {
+        return resumeservice.filterResumes(request.getSkills(), request.getMinYearsOfExperience(), request.getUserId());
+    }
 
 @PostMapping("/filter-user-resumes")
 public ResponseEntity<List<ResumeWithSkillsDTO>> filterUserResumes(@RequestBody Resumefilterrequest request) {
-    List<ResumeWithSkillsDTO> filtered = resumeservice.filterResumesByUser(
-        request.getUserId(),
+    List<ResumeWithSkillsDTO> filtered = resumeservice.filterResumes(
         request.getSkills(),
-        request.getMinYearsOfExperience()
+        request.getMinYearsOfExperience(),
+        request.getUserId()
+
     );
     return ResponseEntity.ok(filtered);
 }

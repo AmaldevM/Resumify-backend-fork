@@ -36,13 +36,15 @@ public interface Resumerepository extends JpaRepository<Resume, Long> {
         "JOIN skills s ON rs.skill_id = s.id " +
         "WHERE s.name IN (:skills) " +
         "AND r.years_of_experience >= :minExp " +
+        "AND r.user_id = :userId " +
         "GROUP BY r.id " +
         "HAVING COUNT(DISTINCT s.name) = :skillCount",
         nativeQuery = true)
     List<Object[]> filterBySkillsAndExperience(
         @Param("skills") List<String> skills,
-        @Param("minExp") int minExp,
-        @Param("skillCount") int skillCount
+        @Param("minExp") double minExp,
+        @Param("skillCount") int skillCount,
+        @Param("userId") Long userId
     );
 
     // Add a method to find resumes by user (without changing existing methods)
