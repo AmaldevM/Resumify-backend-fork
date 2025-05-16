@@ -38,7 +38,12 @@ public class Resumecontroller {
                 .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         // ✅ Let the service handle associating resume with this user
-        resumeservice.uploadResumeForUser(user.getId(), file);
+        try {
+            resumeservice.uploadResumeForUser(user.getId(), file);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         return ResponseEntity.ok("Resume uploaded and saved successfully for user with ID " + userId);
     }

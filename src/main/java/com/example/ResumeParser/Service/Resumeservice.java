@@ -18,10 +18,14 @@ import com.example.ResumeParser.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,52 +63,62 @@ public class Resumeservice {
     //     return finalList;
     // }
 
-    public void parseResume(MultipartFile file) {
-        try {
-            String content = extractTextFromFile(file);
 
-            String name = extractName(content);
-            String email = extractEmail(content);
-            String phone = extractPhone(content);
-            String experience = extractExperience(content);
-            List<String> skills = extractSkills(content);
+    // function that just displays resume on the console
+    // public void parseResume(MultipartFile file) {
+    //     try {
+    //         String content = extractTextFromFile(file);
 
-            System.out.println("Name: " + name);
-            System.out.println("Email: " + email);
-            System.out.println("Phone: " + phone);
-            System.out.println("Experience: " + experience);
-            System.out.println("Skills: " + skills);
+    //         String name = extractName(content);
+    //         String email = extractEmail(content);
+    //         String phone = extractPhone(content);
+    //         String experience = extractExperience(content);
+    //         List<String> skills = extractSkills(content);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    //         System.out.println("Name: " + name);
+    //         System.out.println("Email: " + email);
+    //         System.out.println("Phone: " + phone);
+    //         System.out.println("Experience: " + experience);
+    //         System.out.println("Skills: " + skills);
 
-    private String extractTextFromFile(MultipartFile file) throws IOException {
-        if (file.getOriginalFilename().endsWith(".pdf")) {
-            try (PDDocument document = PDDocument.load(file.getInputStream())) {
-                PDFTextStripper stripper = new PDFTextStripper();
-                return stripper.getText(document);
-            }
-        } else {
-            return new String(file.getBytes());
-        }
-    }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    private String extractEmail(String text) {
-        Matcher matcher = Pattern.compile("\\b[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}\\b").matcher(text);
-        return matcher.find() ? matcher.group() : "Not Found";
-    }
+    // private String extractTextFromFile(MultipartFile file) throws IOException {
+    //     if (file.getOriginalFilename().endsWith(".pdf")) {
+    //         try (PDDocument document = PDDocument.load(file.getInputStream())) {
+    //             PDFTextStripper stripper = new PDFTextStripper();
+    //             return stripper.getText(document);
+    //         }
+    //     } else {
+    //         return new String(file.getBytes());
+    //     }
+    // }
 
-    private String extractPhone(String text) {
-        Matcher matcher = Pattern.compile("\\b\\d{10}\\b").matcher(text);
-        return matcher.find() ? matcher.group() : "Not Found";
-    }
+    // private String extractEmail(String text) {
+    //     Matcher matcher = Pattern.compile("\\b[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}\\b").matcher(text);
+    //     return matcher.find() ? matcher.group() : "Not Found";
+    // }
 
-    private String extractName(String text) {
-        String[] lines = text.split("\n");
-        return lines.length > 0 ? lines[0].trim() : "Not Found";
-    }
+    // private String extractPhone(String text) {
+    //     Matcher matcher = Pattern.compile("\\b\\d{10}\\b").matcher(text);
+    //     return matcher.find() ? matcher.group() : "Not Found";
+    // }
+    // old funtion that extracts name
+    // private String extractName(String text) {
+    //     String[] lines = text.split("\n");
+    //     return lines.length > 0 ? lines[0].trim() : "Not Found";
+    // }
+
+
+    // new function that extracts name
+
+
+
+
+
 
     private String extractExperience(String text) {
         Matcher matcher = Pattern.compile("(\\d+)\\+?\\s+years?\\s+of\\s+experience", Pattern.CASE_INSENSITIVE).matcher(text);
@@ -120,52 +134,58 @@ public class Resumeservice {
         return knownSkills.stream()
                 .filter(skill -> text.toLowerCase().contains(skill.toLowerCase()))
                 .collect(Collectors.toList());
-    }
+   }
 
-    @Transactional
-    public void saveresume(MultipartFile file) {
-        try {
-            String content = extractTextFromFile(file);
 
-            String name = extractName(content);
-            String email = extractEmail(content);
-            String phone = extractPhone(content);
-            String experienceStr = extractExperience(content);
-            List<String> skillsList = extractSkills(content);
 
-            double experience = extractExperienceAsDouble(experienceStr);
+    // old save function that saves resume without id
+    // @Transactional
+    // public void saveresume(MultipartFile file) {
+    //     try {
+    //         String content = extractTextFromFile(file);
 
-            Resume resume = new Resume();
-            resume.setName(name);
-            resume.setEmail(email);
-            resume.setPhoneNumber(phone);
-            resume.setYearsOfExperience(experience);
+    //         String name = extractName(content);
+    //         String email = extractEmail(content);
+    //         String phone = extractPhone(content);
+    //         String experienceStr = extractExperience(content);
+    //         List<String> skillsList = extractSkills(content);
 
-            for (String skillName : skillsList) {
-                Skill skill = skillRepository.findByName(skillName)
-                        .orElseGet(() -> new Skill(skillName));
-                resume.addSkill(skill);
-            }
+    //         double experience = extractExperienceAsDouble(experienceStr);
 
-            resumeRepository.save(resume);
-            System.out.println("Saved resume for: " + name);
+    //         Resume resume = new Resume();
+    //         resume.setName(name);
+    //         resume.setEmail(email);
+    //         resume.setPhoneNumber(phone);
+    //         resume.setYearsOfExperience(experience);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    //         for (String skillName : skillsList) {
+    //             Skill skill = skillRepository.findByName(skillName)
+    //                     .orElseGet(() -> new Skill(skillName));
+    //             resume.addSkill(skill);
+    //         }
 
-    private double extractExperienceAsDouble(String experienceStr) {
-        try {
-            return Double.parseDouble(experienceStr.replaceAll("[^\\d.]", ""));
-        } catch (Exception e) {
-            return 0.0;
-        }
-    }
+    //         resumeRepository.save(resume);
+    //         System.out.println("Saved resume for: " + name);
 
-    public List<Resume> getAllResumes() {
-        return resumeRepository.findAll();
-    }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    // private double extractExperienceAsDouble(String experienceStr) {
+    //     try {
+    //         return Double.parseDouble(experienceStr.replaceAll("[^\\d.]", ""));
+    //     } catch (Exception e) {
+    //         return 0.0;
+    //     }
+    // }
+
+
+
+    // get all resumes funtion
+    // public List<Resume> getAllResumes() {
+    //     return resumeRepository.findAll();
+    // }
 
     // New method to get resumes by userId
     // public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
@@ -216,46 +236,167 @@ public class Resumeservice {
     
         return resumeDTOs;
     }
-    @Transactional
-public void uploadResumeForUser(Long userId, MultipartFile file) {
-    try {
-        // Extract resume content and details
-        String content = extractTextFromFile(file);
-        String name = extractName(content);
-        String email = extractEmail(content);
-        String phone = extractPhone(content);
-        String experienceStr = extractExperience(content);
-        List<String> skillsList = extractSkills(content);
 
-        double experience = extractExperienceAsDouble(experienceStr);
 
-        // Find the user by ID
+    // function that saves resume with userid
+//     @Transactional
+// public void uploadResumeForUser(Long userId, MultipartFile file) {
+//     try {
+//         // Extract resume content and details
+//         String content = extractTextFromFile(file);
+//         String name = extractName(content);
+//         String email = extractEmail(content);
+//         String phone = extractPhone(content);
+//         String experienceStr = extractExperience(content);
+//         List<String> skillsList = extractSkills(content);
+
+//         double experience = extractExperienceAsDouble(experienceStr);
+
+//         // Find the user by ID
+//         User user = userRepository.findById(userId)
+//             .orElseThrow(() -> new RuntimeException("User not found"));
+
+//         // Create a new Resume object
+//         Resume resume = new Resume();
+//         resume.setName(name);
+//         resume.setEmail(email);
+//         resume.setPhoneNumber(phone);
+//         resume.setYearsOfExperience(experience);
+//         resume.setUser(user);  // Associate with the user
+
+//         // Save the skills
+//         for (String skillName : skillsList) {
+//             Skill skill = skillRepository.findByName(skillName)
+//                     .orElseGet(() -> new Skill(skillName));
+//             resume.addSkill(skill);
+//         }
+
+//         // Save the resume
+//         resumeRepository.save(resume);
+//         System.out.println("Resume uploaded and associated with user: " + name);
+
+//     } catch (Exception e) {
+//         e.printStackTrace();
+//     }
+// }
+
+
+
+// new uploadfunction from albin
+public Resume uploadResumeForUser(Long userId,MultipartFile file) throws Exception {
+    InputStream is = file.getInputStream();
+    PDDocument document = PDDocument.load(is);
+    String text = new PDFTextStripper().getText(document);
+    String lowerText = text.toLowerCase();
+    String[] lines = text.split("\n");
+
+    String email = extractRegex(text, "[\\w\\.-]+@[\\w\\.-]+", "Email not found");
+    String phone = extractRegex(text, "(\\+?\\d{1,3}[-.\\s]?)?(\\(?\\d{1,4}\\)?[-.\\s]?){1,5}\\d{1,4}", "Phone not found");
+    double experience = extractExperienceYears(text);
+    // String skills = extractSkills(lowerText);
+    List<String> skillsList = extractSkills(text);
+    //         // Find the user by ID
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Create a new Resume object
-        Resume resume = new Resume();
-        resume.setName(name);
-        resume.setEmail(email);
-        resume.setPhoneNumber(phone);
-        resume.setYearsOfExperience(experience);
-        resume.setUser(user);  // Associate with the user
-
-        // Save the skills
-        for (String skillName : skillsList) {
-            Skill skill = skillRepository.findByName(skillName)
-                    .orElseGet(() -> new Skill(skillName));
-            resume.addSkill(skill);
+    String name = "Name not found";
+    FontAwarePDFStripper fontStripper = new FontAwarePDFStripper();
+    fontStripper.setStartPage(1);
+    fontStripper.setEndPage(1);
+    fontStripper.getText(document);
+    String fontDetectedName = fontStripper.extractLargestText();
+    if (!"Name not found".equals(fontDetectedName)) {
+        name = fontDetectedName;
+    } else {
+        String emailLower = email.toLowerCase();
+        for (int i = 0; i < lines.length; i++) {
+            String cleanedLine = lines[i].replaceAll("[^\\p{Print}]", "").toLowerCase();
+            if (!emailLower.isEmpty() && cleanedLine.contains(emailLower)) {
+                int start = Math.max(0, i - 5);
+                for (int j = i - 1; j >= start; j--) {
+                    String candidate = lines[j].trim();
+                    if (candidate.matches("[A-Za-z ]{3,40}")) {
+                        int wordCount = candidate.split("\\s+").length;
+                        if (wordCount >= 2 && wordCount <= 3) {
+                            name = candidate;
+                            break;
+                        }
+                    }
+                }
+                if (!"Name not found".equals(name))
+                    break;
+            }
         }
-
-        // Save the resume
-        resumeRepository.save(resume);
-        System.out.println("Resume uploaded and associated with user: " + name);
-
-    } catch (Exception e) {
-        e.printStackTrace();
     }
+    //  Save the skills
+ 
+
+    document.close();
+
+    Resume resume = new Resume();
+    resume.setName(name);
+    resume.setEmail(email);
+    resume.setUser(user); 
+    resume.setPhoneNumber(phone);
+    resume.setYearsOfExperience(experience);
+    for (String skillName : skillsList) {
+        Skill skill = skillRepository.findByName(skillName)
+                .orElseGet(() -> new Skill(skillName));
+        resume.addSkill(skill);
+    }
+  
+
+    return resumeRepository.save(resume);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -308,4 +449,123 @@ public void deleteResumesByUserId(Long userId) {
 }
 
 
+
+private String extractRegex(String text, String regex, String defaultValue) {
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(text);
+    return matcher.find() ? matcher.group() : defaultValue;
 }
+
+private double extractExperienceYears(String text) {
+    String[] lines = text.split("\n");
+    List<String> experienceKeywords = Arrays.asList("experience", "work experience", "professional experience");
+
+    Pattern pattern = Pattern.compile("(\\d+)\\s*(years|year|yrs|yr)?\\s*(and)?\\s*(\\d+)?\\s*(months|month|mos|mo)?", Pattern.CASE_INSENSITIVE);
+
+    for (int i = 0; i < lines.length; i++) {
+        String lineLower = lines[i].toLowerCase();
+        boolean containsKeyword = experienceKeywords.stream().anyMatch(lineLower::contains);
+
+        if (containsKeyword) {
+            Matcher matcher = pattern.matcher(lineLower);
+            if (matcher.find()) {
+                int years = matcher.group(1) != null ? Integer.parseInt(matcher.group(1)) : 0;
+                int months = matcher.group(4) != null ? Integer.parseInt(matcher.group(4)) : 0;
+                return years + (months / 12.0);
+            }
+
+            if (i + 1 < lines.length) {
+                String nextLine = lines[i + 1].toLowerCase();
+                Matcher matcherNext = pattern.matcher(nextLine);
+                if (matcherNext.find()) {
+                    int years = matcherNext.group(1) != null ? Integer.parseInt(matcherNext.group(1)) : 0;
+                    int months = matcherNext.group(4) != null ? Integer.parseInt(matcherNext.group(4)) : 0;
+                    return years + (months / 12.0);
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+// private String extractSkills(String lowerText) {
+//     Set<String> foundSkills = new HashSet<>();
+//     for (String skill : KNOWN_SKILLS) {
+//         if (lowerText.contains(skill)) {
+//             foundSkills.add(skill);
+//         }
+//     }
+//     return String.join(", ", foundSkills);
+// }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
