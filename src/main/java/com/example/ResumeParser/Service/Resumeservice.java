@@ -98,59 +98,48 @@ public class Resumeservice {
     //     }
     // }
 
-    // private String extractEmail(String text) {
-    //     Matcher matcher = Pattern.compile("\\b[\\w.%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}\\b").matcher(text);
-    //     return matcher.find() ? matcher.group() : "Not Found";
+    
+
+    
+
+
+    
+    // old function that calculates experience
+    // private double calculateExperienceDuration(String text) {
+    //     Pattern dateRangePattern = Pattern.compile(
+    //         "(?i)(\\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|" +
+    //         "jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|" +
+    //         "dec(?:ember)?|\\d{4}))\\s*[-–to]{1,3}\\s*(\\b(?:present|current|jan(?:uary)?|" +
+    //         "feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|" +
+    //         "sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|\\d{4}))",
+    //         Pattern.CASE_INSENSITIVE);
+    
+    //     Matcher matcher = dateRangePattern.matcher(text);
+    //     int currentYear = java.time.Year.now().getValue();
+    //     int minYear = Integer.MAX_VALUE;
+    //     int maxYear = Integer.MIN_VALUE;
+    
+    //     while (matcher.find()) {
+    //         String startStr = matcher.group(1).replaceAll("[^a-zA-Z0-9]", "").trim();
+    //         String endStr = matcher.group(2).replaceAll("[^a-zA-Z0-9]", "").trim();
+    
+    //         int startYear = extractYear(startStr);
+    //         int endYear = endStr.equalsIgnoreCase("present") || endStr.equalsIgnoreCase("current")
+    //                 ? currentYear
+    //                 : extractYear(endStr);
+    
+    //         if (startYear > 1900 && startYear <= currentYear) {
+    //             minYear = Math.min(minYear, startYear);
+    //         }
+    //         if (endYear > 1900 && endYear <= currentYear) {
+    //             maxYear = Math.max(maxYear, endYear);
+    //         }
+    //     }
+    
+    //     return (minYear <= maxYear && minYear != Integer.MAX_VALUE && maxYear != Integer.MIN_VALUE)
+    //             ? maxYear - minYear
+    //             : 0.0;
     // }
-
-    // private String extractPhone(String text) {
-    //     Matcher matcher = Pattern.compile("\\b\\d{10}\\b").matcher(text);
-    //     return matcher.find() ? matcher.group() : "Not Found";
-    // }
-    // old funtion that extracts name
-    // private String extractName(String text) {
-    //     String[] lines = text.split("\n");
-    //     return lines.length > 0 ? lines[0].trim() : "Not Found";
-    // }
-
-
-    // new function that extracts name
-
-    private double calculateExperienceDuration(String text) {
-        Pattern dateRangePattern = Pattern.compile(
-            "(?i)(\\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|" +
-            "jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|" +
-            "dec(?:ember)?|\\d{4}))\\s*[-–to]{1,3}\\s*(\\b(?:present|current|jan(?:uary)?|" +
-            "feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|" +
-            "sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|\\d{4}))",
-            Pattern.CASE_INSENSITIVE);
-    
-        Matcher matcher = dateRangePattern.matcher(text);
-        int currentYear = java.time.Year.now().getValue();
-        int minYear = Integer.MAX_VALUE;
-        int maxYear = Integer.MIN_VALUE;
-    
-        while (matcher.find()) {
-            String startStr = matcher.group(1).replaceAll("[^a-zA-Z0-9]", "").trim();
-            String endStr = matcher.group(2).replaceAll("[^a-zA-Z0-9]", "").trim();
-    
-            int startYear = extractYear(startStr);
-            int endYear = endStr.equalsIgnoreCase("present") || endStr.equalsIgnoreCase("current")
-                    ? currentYear
-                    : extractYear(endStr);
-    
-            if (startYear > 1900 && startYear <= currentYear) {
-                minYear = Math.min(minYear, startYear);
-            }
-            if (endYear > 1900 && endYear <= currentYear) {
-                maxYear = Math.max(maxYear, endYear);
-            }
-        }
-    
-        return (minYear <= maxYear && minYear != Integer.MAX_VALUE && maxYear != Integer.MIN_VALUE)
-                ? maxYear - minYear
-                : 0.0;
-    }
     
     private int extractYear(String value) {
         try {
@@ -170,11 +159,7 @@ public class Resumeservice {
 
 
 
-// old function to calculate experience
-//     private String extractExperience(String text) {
-//         Matcher matcher = Pattern.compile("(\\d+)\\+?\\s+years?\\s+of\\s+experience", Pattern.CASE_INSENSITIVE).matcher(text);
-//         return matcher.find() ? matcher.group(1) + " years" : "Not Found";
-//     }
+
 
     private List<String> extractSkills(String text) {
         List<String> knownSkills = knownskillrepo.findAll()
@@ -189,75 +174,14 @@ public class Resumeservice {
 
 
 
-    // old save function that saves resume without id
-    // @Transactional
-    // public void saveresume(MultipartFile file) {
-    //     try {
-    //         String content = extractTextFromFile(file);
+    
 
-    //         String name = extractName(content);
-    //         String email = extractEmail(content);
-    //         String phone = extractPhone(content);
-    //         String experienceStr = extractExperience(content);
-    //         List<String> skillsList = extractSkills(content);
-
-    //         double experience = extractExperienceAsDouble(experienceStr);
-
-    //         Resume resume = new Resume();
-    //         resume.setName(name);
-    //         resume.setEmail(email);
-    //         resume.setPhoneNumber(phone);
-    //         resume.setYearsOfExperience(experience);
-
-    //         for (String skillName : skillsList) {
-    //             Skill skill = skillRepository.findByName(skillName)
-    //                     .orElseGet(() -> new Skill(skillName));
-    //             resume.addSkill(skill);
-    //         }
-
-    //         resumeRepository.save(resume);
-    //         System.out.println("Saved resume for: " + name);
-
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
-    // private double extractExperienceAsDouble(String experienceStr) {
-    //     try {
-    //         return Double.parseDouble(experienceStr.replaceAll("[^\\d.]", ""));
-    //     } catch (Exception e) {
-    //         return 0.0;
-    //     }
-    // }
+    
 
 
 
-    // get all resumes funtion
-    // public List<Resume> getAllResumes() {
-    //     return resumeRepository.findAll();
-    // }
+   
 
-    // New method to get resumes by userId
-    // public List<ResumeWithSkillsDTO> getResumesByUserId(Long userId) {
-    //     User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-    //     List<Resume> resumes = resumeRepository.findByUser(user);
-
-    //     List<ResumeWithSkillsDTO> resumeDTOs = new ArrayList<>();
-    //     for (Resume resume : resumes) {
-    //         // Pass yearsOfExperience as double
-    //         ResumeWithSkillsDTO dto = new ResumeWithSkillsDTO(
-    //             resume.getId(),
-    //             resume.getName(),
-    //             resume.getPhoneNumber(),
-    //             resume.getEmail(),
-    //             resume.getYearsOfExperience(),  // No casting needed for double
-    //             resume.getSkills().toString()
-    //         );
-    //         resumeDTOs.add(dto);
-    //     }
-    //     return resumeDTOs;
-    // }
 
 
     // test method
@@ -287,51 +211,6 @@ public class Resumeservice {
     
         return resumeDTOs;
     }
-
-
-    // function that saves resume with userid
-//     @Transactional
-// public void uploadResumeForUser(Long userId, MultipartFile file) {
-//     try {
-//         // Extract resume content and details
-//         String content = extractTextFromFile(file);
-//         String name = extractName(content);
-//         String email = extractEmail(content);
-//         String phone = extractPhone(content);
-//         String experienceStr = extractExperience(content);
-//         List<String> skillsList = extractSkills(content);
-
-//         double experience = extractExperienceAsDouble(experienceStr);
-
-//         // Find the user by ID
-//         User user = userRepository.findById(userId)
-//             .orElseThrow(() -> new RuntimeException("User not found"));
-
-//         // Create a new Resume object
-//         Resume resume = new Resume();
-//         resume.setName(name);
-//         resume.setEmail(email);
-//         resume.setPhoneNumber(phone);
-//         resume.setYearsOfExperience(experience);
-//         resume.setUser(user);  // Associate with the user
-
-//         // Save the skills
-//         for (String skillName : skillsList) {
-//             Skill skill = skillRepository.findByName(skillName)
-//                     .orElseGet(() -> new Skill(skillName));
-//             resume.addSkill(skill);
-//         }
-
-//         // Save the resume
-//         resumeRepository.save(resume);
-//         System.out.println("Resume uploaded and associated with user: " + name);
-
-//     } catch (Exception e) {
-//         e.printStackTrace();
-//     }
-// }
-
-
 
 // new upload function from albin
 public Resume uploadResumeForUser(Long userId,MultipartFile file) throws Exception {
@@ -466,39 +345,6 @@ private double extractExperienceYearsFromExperienceSection(String text) {
 
 
 
-// get filtered resumes for specific user
-// public List<ResumeWithSkillsDTO> filterResumesByUser(Long userId, List<String> skillNames, double minExperience) {
-//     User user = userRepository.findById(userId)
-//         .orElseThrow(() -> new RuntimeException("User not found"));
-
-//     List<Resume> userResumes = resumeRepository.findByUser(user);
-
-//     return userResumes.stream()
-//         .filter(resume -> resume.getYearsOfExperience() >= minExperience)
-//         .filter(resume -> {
-//             List<String> resumeSkillNames = resume.getSkills().stream()
-//                 .map(Skill::getName)
-//                 .map(String::toLowerCase)
-//                 .collect(Collectors.toList());
-//             return skillNames.stream()
-//                 .allMatch(s -> resumeSkillNames.contains(s.toLowerCase()));
-//         })
-//         .map(resume -> {
-//             List<String> skillList = resume.getSkills().stream()
-//                 .map(Skill::getName)
-//                 .collect(Collectors.toList());
-
-//             return new ResumeWithSkillsDTO(
-//                 resume.getId(),
-//                 resume.getName(),
-//                 resume.getPhoneNumber(),
-//                 resume.getEmail(),
-//                 resume.getYearsOfExperience(),
-//                 skillList
-//             );
-//         })
-//         .collect(Collectors.toList());
-// }
 
 
 // deklete users resume with id

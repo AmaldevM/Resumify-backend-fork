@@ -28,6 +28,7 @@ public class Resumecontroller {
         return "hello";
     }
 
+//for uploading resumes of a specific user 
     @PostMapping("/resumes/upload/{userId}")
     public ResponseEntity<String> uploadResume(@PathVariable Long userId, @RequestParam("file") MultipartFile file) {
         System.out.println("Upload called with userId: " + userId);
@@ -46,54 +47,29 @@ public class Resumecontroller {
 
         return ResponseEntity.ok("Resume uploaded and saved successfully for user with ID " + userId);
     }
-    // old method to save resume
-    // @PostMapping("/saveresume")
-    // public ResponseEntity<String> uploadAndSaveResume(@RequestParam("file") MultipartFile file) {
-    //     resumeservice.saveresume(file);
-    //     return ResponseEntity.ok("Resume parsed and saved successfully.");
-    // }
 
 
-        //old method to get all resumes in db
-    // @GetMapping("/resumes")
-    // public ResponseEntity<List<Resume>> getAllResumes() {
-    //     List<Resume> resumes = resumeservice.getAllResumes();
-    //     return ResponseEntity.ok(resumes);
-    // }
 
-    // @PostMapping("/filter")
-    // public List<ResumeWithSkillsDTO> filterResumes(@RequestBody SkillFilterRequest request) {
-    //     return resumeservice.filterResumes(request.getSkills(), (int) request.getMinExp());
-    // }
-
-    // New endpoint to get resumes by userId
+// New endpoint to get resumes by userId
     @GetMapping("/resumesByUserId")
     public ResponseEntity<List<ResumeWithSkillsDTO>> getResumesByUserId(@RequestParam("userId") Long userId) {
         List<ResumeWithSkillsDTO> resumes = resumeservice.getResumesByUserId(userId);
         return ResponseEntity.ok(resumes);
     }
- @PostMapping("/filter")
-    public List<ResumeWithSkillsDTO> filterResumes(@RequestBody Resumefilterrequest request) {
-        return resumeservice.filterResumes(request.getSkills(), request.getMinYearsOfExperience(), request.getUserId());
+
+// for filtering resumes of a specific user
+    @PostMapping("/filter")
+        public List<ResumeWithSkillsDTO> filterResumes(@RequestBody Resumefilterrequest request) {
+            return resumeservice.filterResumes(request.getSkills(), request.getMinYearsOfExperience(), request.getUserId());
+        }
+
+
+// deleting the stored resumed details of a specific user
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<?> deleteUserResumes(@PathVariable Long userId) {
+        resumeservice.deleteResumesByUserId(userId);
+        return ResponseEntity.ok("User's resumes deleted successfully");
     }
-
-@PostMapping("/filter-user-resumes")
-public ResponseEntity<List<ResumeWithSkillsDTO>> filterUserResumes(@RequestBody Resumefilterrequest request) {
-    List<ResumeWithSkillsDTO> filtered = resumeservice.filterResumes(
-        request.getSkills(),
-        request.getMinYearsOfExperience(),
-        request.getUserId()
-
-    );
-    return ResponseEntity.ok(filtered);
-}
-
-
-@DeleteMapping("/delete/{userId}")
-public ResponseEntity<?> deleteUserResumes(@PathVariable Long userId) {
-    resumeservice.deleteResumesByUserId(userId);
-    return ResponseEntity.ok("User's resumes deleted successfully");
-}
 
 
 
