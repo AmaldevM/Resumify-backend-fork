@@ -39,9 +39,8 @@ public interface Resumerepository extends JpaRepository<Resume, Long> {
         "AND r.user_id = :userId " +
         "GROUP BY r.id " +
         // "HAVING COUNT(DISTINCT s.name) = :skillCount",
-        "ORDER BY r.years_of_experience DESC"+
-
-        "HAVING COUNT(DISTINCT s.name) = :skillCount",
+        "HAVING COUNT(DISTINCT s.name) = :skillCount "+
+        "ORDER BY r.years_of_experience DESC",
         nativeQuery = true)
     List<Object[]> filterBySkillsAndExperience(
         @Param("skills") List<String> skills,
