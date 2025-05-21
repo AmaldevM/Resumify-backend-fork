@@ -28,6 +28,10 @@ public class User {
     private String email;
 
     private String password;
+   
+
+
+    private String validationCode;
     public Long getId() {
     return id;
     }
@@ -57,6 +61,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+     public String getValidationCode() {
+        return validationCode;
+    }
+
+    public void setValidationCode(String validationCode) {
+        this.validationCode = validationCode;
     }
 
 
