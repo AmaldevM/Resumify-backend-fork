@@ -156,6 +156,7 @@ public class Resumeservice {
         return -1;
     }
     
+  
 
 
 
@@ -220,8 +221,15 @@ public Resume uploadResumeForUser(Long userId,MultipartFile file) throws Excepti
     String lowerText = text.toLowerCase();
     String[] lines = text.split("\n");
 
-    String email = extractRegex(text, "[\\w\\.-]+@[\\w\\.-]+", "Email not found");
-    String phone = extractRegex(text, "(\\+?\\d{1,3}[-.\\s]?)?(\\(?\\d{1,4}\\)?[-.\\s]?){1,5}\\d{1,4}", "Phone not found");
+    // String email = extractRegex(text, "[\\w\\.-]+@[\\w\\.-]+", "Email not found");
+    // String phone = extractRegex(text, "(\\+?\\d{1,3}[-.\\s]?)?(\\(?\\d{1,4}\\)?[-.\\s]?){1,5}\\d{1,4}", "Phone not found");
+       String email = extractRegex(text, "[\\w\\.-]+@[\\w\\.-]+", "Email not found");
+        String phone = extractRegex(text,
+            "(\\+\\d{1,3}[\\s-]?)?" +           // Optional country code +1, +91, etc.
+            "(\\(\\d{1,4}\\)[\\s-]?)?" +        // Optional area code with parentheses
+            "([\\d\\s-]{5,15}\\d)",              // Main number with 5-15 digits including spaces/dashes
+            "Phone not found"
+        );
     double experience = extractExperienceYearsFromExperienceSection(text);
     
     if (experience == 0) {
