@@ -1,5 +1,6 @@
 package com.example.ResumeParser.Controller;
 
+import com.example.ResumeParser.Service.Email.GenCode;
 import com.example.ResumeParser.entity.User;
 import com.example.ResumeParser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GenCode genCode;
+
     // Register endpoint
     @PostMapping("/register")
     public User registerUser(@RequestBody User user) {
@@ -21,7 +25,9 @@ public class AuthController {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("User with this email already exists");
         }
+        genCode.gencode(user);
         return userRepository.save(user);
+        
     }
 
     // Login endpoint
