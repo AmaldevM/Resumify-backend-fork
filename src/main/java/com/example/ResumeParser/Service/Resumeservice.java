@@ -355,7 +355,7 @@ private double extractExperienceYearsFromExperienceSection(String text) {
 
 
 
-// deklete users resume with id
+// delete users resume with id
 
 
 public void deleteResumesByUserId(Long userId) {
