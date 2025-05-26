@@ -6,12 +6,14 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -44,7 +46,9 @@ public class Resume {
 
     public Resume() {}
 
-    // Getters and Setters
+    @Lob
+    @Column(name = "resume_image", columnDefinition = "LONGBLOB")
+    private byte[] resumeImage;
 
     public Long getId() {
         return id;
@@ -100,6 +104,15 @@ public class Resume {
 
     public void setSkills(Set<Skill> skills) {
         this.skills = skills;
+    }
+
+//Methods to set and get image of the pdf resume uploaded 
+    public byte[] getResumeImage() {
+        return resumeImage;
+    }
+
+    public void setResumeImage(byte[] resumeImage) {
+        this.resumeImage = resumeImage;
     }
 
     // Methods to manage bidirectional relationship

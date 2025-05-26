@@ -9,6 +9,10 @@ import com.example.ResumeParser.dto.Resumefilterrequest;
 import com.example.ResumeParser.dto.SkillFilterRequest;
 import com.example.ResumeParser.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,7 +65,25 @@ public class Resumecontroller {
     @PostMapping("/filter")
         public List<ResumeWithSkillsDTO> filterResumes(@RequestBody Resumefilterrequest request) {
             return resumeservice.filterResumes(request.getSkills(), request.getMinYearsOfExperience(), request.getUserId());
+    }
+    
+// Function to show the image of the resume
+    @GetMapping("/resumes/image/{resumeId}")
+    public ResponseEntity<Resource> getResumeImage(@PathVariable Long resumeId) {
+        Resume resume = resumeservice.getResumeById(resumeId);
+        if (resume == null || resume.getResumeImage() == null) {
+            return ResponseEntity.notFound().build();
         }
+
+        byte[] imageData = resume.getResumeImage();
+        ByteArrayResource resource = new ByteArrayResource(imageData);
+
+        return ResponseEntity.ok()
+                .contentLength(imageData.length)
+                .contentType(MediaType.IMAGE_PNG) // Use actual image format if needed
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"resume_" + resumeId + ".png\"")
+                .body(resource);
+    }
 
 
 // deleting the stored resumed details of a specific user
@@ -70,20 +92,6 @@ public class Resumecontroller {
         resumeservice.deleteResumesByUserId(userId);
         return ResponseEntity.ok("User's resumes deleted successfully");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 }
